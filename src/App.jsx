@@ -34,11 +34,14 @@ function App() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editText, setEditText] = useState("");
   const [darkMode, setDarkMode] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const bottomRef = useRef(null);
   const abortControllerRef = useRef(null);
 
   const toggleTheme = () => setDarkMode((prev) => !prev);
+
+  const closeSidebar = () => setSidebarOpen(false);
 
   // Stop AI generation
   const stopGeneration = () => {
@@ -178,6 +181,7 @@ function App() {
     setMoreIndex(null);
     setEditingIndex(null);
     setEditText("");
+    closeSidebar();
   };
 
   const openChat = async (id) => {
@@ -197,6 +201,7 @@ function App() {
       setMoreIndex(null);
       setEditingIndex(null);
       setEditText("");
+      closeSidebar();
     } catch (error) {
       console.log("Open chat error:", error);
     }
@@ -314,8 +319,25 @@ function App() {
 
   return (
     <div className={`app ${darkMode ? "dark-mode" : "light-mode"}`}>
-      <aside className="sidebar">
-        <h2 className="logo">✦ NovaAI</h2>
+      {sidebarOpen && (
+        <button
+          className="sidebar-backdrop"
+          onClick={closeSidebar}
+          aria-label="Close sidebar"
+        />
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
+        <div className="sidebar-heading">
+          <h2 className="logo">✦ NovaAI</h2>
+          <button
+            className="sidebar-close"
+            onClick={closeSidebar}
+            aria-label="Close menu"
+          >
+            ×
+          </button>
+        </div>
 
         <button className="new-chat" onClick={newChat}>
           + New Chat
@@ -356,7 +378,16 @@ function App() {
 
       <main className="main">
         <header className="topbar">
-          <span>✦ NovaAI Assistant</span>
+          <div className="topbar-left">
+            <button
+              className="menu-toggle"
+              onClick={() => setSidebarOpen((prev) => !prev)}
+              aria-label="Open menu"
+            >
+              ☰
+            </button>
+            <span>✦ NovaAI Assistant</span>
+          </div>
 
           <div className="topbar-right">
             <span className="online">● Online</span>
